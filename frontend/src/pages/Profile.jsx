@@ -33,9 +33,9 @@ export default function Profile() {
     setEditing(false);
   };
 
-  // if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div>Loading...</div>;
   if (!isAuthenticated)
-    return <button onClick={() => loginWithRedirect()}>Login</button>;
+    return <button className=" p-4 " onClick={() => loginWithRedirect()}>Login</button>;
 
   return (
     <div className="max-w-md mx-auto mt-10 bg-white p-6 rounded-xl shadow-lg">

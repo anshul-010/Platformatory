@@ -6,10 +6,10 @@ import { Auth0Provider } from "@auth0/auth0-react";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Auth0Provider
-    domain="dev-toipslult5bvi0ch"
-    clientId="d9AfFOGkkefi3EMSYqpUMcggnOQhRDFo"
-    authorizationParams={{ redirect_uri: window.location.origin }}
-  >
-    <App />
-  </Auth0Provider>
+  domain="dev-toipslult5bvi0ch.us.auth0.com"
+  clientId="d9AfFOGkkefi3EMSYqpUMcggnOQhRDFo"
+  authorizationParams={{ redirect_uri: "http://localhost:8000/api" }}
+>
+  <App />
+</Auth0Provider>
 );
