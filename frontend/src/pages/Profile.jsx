@@ -35,7 +35,7 @@ export default function Profile() {
 
   if (isLoading) return <div>Loading...</div>;
   if (!isAuthenticated)
-    return <button className=" p-4 " onClick={() => loginWithRedirect()}>Login</button>;
+    return <button style={{padding:"8px 16px", border:"none", borderRadius:"4px" ,background:"gray", color:"white", fontWeight:"bold", letterSpacing:"1px" }} onClick={() => loginWithRedirect()}>Login</button>;
 
   return (
     <div className="max-w-md mx-auto mt-10 bg-white p-6 rounded-xl shadow-lg">
