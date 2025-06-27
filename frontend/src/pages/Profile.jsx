@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { useAuth0 } from "@auth0/auth0-react";
+import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
+// import "./Profile.css";
 
 export default function Profile() {
-  const { user, isAuthenticated, loginWithRedirect, logout, isLoading } = useAuth0();
+  const [user, setUser] = useState(null);
   const [profile, setProfile] = useState({
     firstName: "",
     lastName: "",
@@ -14,57 +15,105 @@ export default function Profile() {
   const [editing, setEditing] = useState(false);
 
   useEffect(() => {
-    if (user && isAuthenticated) {
-      axios.get(`/api/profile/${user.email}`).then((res) => {
-        setProfile(res.data);
-      });
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
     }
-  }, [user, isAuthenticated]);
+  }, []);
+
+  useEffect(() => {
+    if (user?.email) {
+      const storedProfile = localStorage.getItem(`profile-${user.email}`);
+      if (storedProfile) {
+        setProfile(JSON.parse(storedProfile));
+      }
+    }
+  }, [user]);
 
   const handleChange = (e) => {
-    setProfile({ ...profile, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setProfile((prevProfile) => ({
+      ...prevProfile,
+      [name]: value,
+    }));
   };
 
-  const handleSave = async () => {
-    await axios.post("/api/profile/update", {
-      email: user.email,
-      ...profile,
-    });
+  const handleSave = () => {
+    if (!user) {
+      alert("Please login to save your profile.");
+      return;
+    }
+    localStorage.setItem(`profile-${user.email}`, JSON.stringify(profile));
     setEditing(false);
   };
 
-  if (isLoading) return <div>Loading...</div>;
-  if (!isAuthenticated)
-    return <button style={{padding:"8px 16px", border:"none", borderRadius:"4px" ,background:"gray", color:"white", fontWeight:"bold", letterSpacing:"1px" }} onClick={() => loginWithRedirect()}>Login</button>;
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    if (user?.email) {
+      localStorage.removeItem(`profile-${user.email}`);
+    }
+    setUser(null);
+    setProfile({
+      firstName: "",
+      lastName: "",
+      phoneNumber: "",
+      city: "",
+      pincode: "",
+    });
+  };
+
+  const handleLoginSuccess = async (credentialResponse) => {
+    const { credential } = credentialResponse;
+    const decoded = jwtDecode(credential);
+
+    const userData = {
+      email: decoded.email,
+      name: decoded.name,
+    };
+    localStorage.setItem("user", JSON.stringify(userData));
+    setUser(userData);
+  };
 
   return (
-    <div className="max-w-md mx-auto mt-10 bg-white p-6 rounded-xl shadow-lg">
-      <h1 className="text-2xl font-bold mb-4">Profile</h1>
-      {Object.keys(profile).map((key) => (
-        <div key={key} className="mb-4">
-          <label className="block text-sm font-medium capitalize mb-1">{key}</label>
-          <input
-            name={key}
-            value={profile[key]}
-            onChange={handleChange}
-            disabled={!editing}
+    <GoogleOAuthProvider clientId="587963875107-0qqpqv81o4k1cgrslsd5ua8j21e2ee33.apps.googleusercontent.com">
+      {!user ? (
+        <div className="login-container">
+          <GoogleLogin
+            onSuccess={handleLoginSuccess}
+            onError={() => alert("Login failed")}
           />
         </div>
-      ))}
-      <div className="flex justify-between">
-        {!editing && <button onClick={() => setEditing(true)}>Edit</button>}
-        {editing && (
-          <>
-            <button onClick={handleSave}>Save</button>
-            <button variant="secondary" onClick={() => setEditing(false)}>
-              Cancel
-            </button>
-          </>
-        )}
-        <button variant="destructive" onClick={() => logout({ returnTo: window.location.origin })}>
-          Logout
-        </button>
-      </div>
-    </div>
+      ) : (
+        <div className="profile-container">
+          <h1 className="profile-heading">Welcome, {user.name}</h1>
+          <div className="profile-form">
+            {Object.keys(profile).map((key) => (
+              <div key={key} className="profile-field">
+                <label className="profile-label">{key}</label>
+                <input
+                  name={key}
+                  value={profile[key] || ""}
+                  onChange={handleChange}
+                  disabled={!editing}
+                  className={`profile-input ${editing ? "editable" : "readonly"}`}
+                />
+              </div>
+            ))}
+          </div>
+          <div className="profile-actions">
+            {!editing && (
+              <button onClick={() => setEditing(true)} className="btn edit">Edit</button>
+            )}
+            {editing && (
+              <>
+                <button onClick={handleSave} className="btn save">Save</button>
+                <button onClick={() => setEditing(false)} className="btn cancel">Cancel</button>
+              </>
+            )}
+            <button onClick={handleLogout} className="btn logout">Logout</button>
+          </div>
+        </div>
+      )}
+    </GoogleOAuthProvider>
   );
 }
