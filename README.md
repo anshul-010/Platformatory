@@ -17,10 +17,10 @@ It solves the problem of having a user-authenticated editable profile interface 
 ## 📸 Screenshots
 
 ### Login Page
-![Login Screenshot](./assets/login.png)
+![Login Screenshot](https://github.com/user-attachments/assets/2d6ed59f-6080-4452-9c16-8c02bccd0bcc)
 
 ### Profile Page
-![Profile Screenshot](./assets/profile.png)
+![Profile Screenshot](https://github.com/user-attachments/assets/3f60a37a-1385-48fa-a2d6-c7ac2471dceb)
 
 ### 1. Clone the repo
 
