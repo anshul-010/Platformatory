@@ -1,7 +1,6 @@
 # Google OAuth Profile Editor (React)
 
 ## 🚀 Project Overview
-
 This is a simple React-based frontend application that allows users to:
 
 - **Log in using Google OAuth2**
@@ -9,6 +8,13 @@ This is a simple React-based frontend application that allows users to:
 - **Store profile information in local storage (simulating a basic database)**
 
 It solves the problem of having a user-authenticated editable profile interface with minimal setup — ideal for prototypes or quick demos.
+
+# Tech Use
+1. React.js
+2. node.js
+3. express.js
+4. mongoDB
+5. Google Auth
 
 ---
 
